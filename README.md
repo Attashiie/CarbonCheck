@@ -152,3 +152,5 @@ As rotas protegidas usam um token JWT no cabeçalho `Authorization: Bearer <toke
 - Os fatores de emissão presentes no código são **ilustrativos** e não devem ser usados como referência oficial para declarações regulatórias sem validação e substituição por fatores adequados à metodologia, ao período e à operação.
 - O fluxo de verificação implementado é simplificado e não substitui verificação independente.
 - O sistema não implementa nem comprova conformidade com a **ISO 14001**. Ele apoia partes do registro e da análise de inventários, em linha com conceitos de quantificação e verificação de emissões associados às **ISO 14064-1** e **ISO 14064-3**; não equivale a certificação.
+
+Desenvolvido por Vitor Braga | @Attashiie
