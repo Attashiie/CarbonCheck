@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="./logo.png" alt="CarbonCheck" width="112">
   <h1>CarbonCheck</h1>
   <p><strong>Inventário e acompanhamento de emissões de transportadoras</strong></p>
   <p>
