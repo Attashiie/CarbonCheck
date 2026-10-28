@@ -1,0 +1,273 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CarbonCheck</title>
+<style>
+:root{color-scheme:light;--bg:#f1f6ef;--ink:#18342b;--mut:#63786b;--line:#dce7dc;--card:#fff;--p:#20734b;--p-dark:#15583a;--leaf:#72a843;--ok:#28734c;--bad:#ae493b;--amb:#9a6b1c;--shadow:0 12px 34px rgba(28,67,34,.12);--shadow-hover:0 18px 42px rgba(28,67,34,.18)}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg);scroll-behavior:smooth}
+body{min-height:100vh;margin:0;background:linear-gradient(rgba(241,246,239,.7),rgba(241,246,239,.72)),url("/static/verde.jpg") center/cover fixed;color:var(--ink);font:15px/1.6 "Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;backdrop-filter:blur(2px)}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(112deg,rgba(23,59,43,.9),rgba(32,86,59,.82),rgba(36,75,52,.9));color:#fff;padding:15px clamp(18px,4vw,56px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 5px 24px rgba(21,58,44,.22);border-bottom:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+header h1{display:flex;align-items:center;margin:0;font:750 23px/1.2 "Segoe UI",system-ui,sans-serif;letter-spacing:-.7px}
+header h1::before{content:"";width:44px;height:44px;flex:0 0 44px;margin-right:11px;background:url("/static/logo.png") center/auto 62px no-repeat}
+header h1 small{font:400 12px/1.35 "Segoe UI",system-ui,sans-serif;letter-spacing:0;color:#d8e8db;margin-left:13px;padding-left:13px;border-left:1px solid #ffffff35}
+#hdr{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#hdr>span{font-size:13px;color:#dceadd;margin-right:5px}
+#hdr a{color:#f1f6ec;text-decoration:none;font-size:13px;font-weight:650;padding:8px 12px;border:1px solid transparent;border-radius:999px;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+#hdr a:hover{background:#ffffff16;border-color:#ffffff30;transform:translateY(-1px)}
+main{max-width:1180px;margin:clamp(24px,4vw,42px) auto;padding:0 clamp(16px,3vw,30px);animation:rise-in .4s ease both}
+.grid{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{position:relative;min-width:0;overflow-x:auto;background:var(--card);border:1px solid #dce8dc;border-radius:18px;padding:clamp(18px,2.3vw,27px);margin-bottom:18px;box-shadow:var(--shadow);transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
+.card:hover{box-shadow:var(--shadow-hover);border-color:rgba(203,220,201,.96)}
+#det>.m{display:inline-block;margin:0;padding:12px 16px;border:1px solid #dce8dc;border-radius:12px;background:#fffffff0;color:#405c49;box-shadow:0 5px 18px #1c43220d}
+h2,h3{margin:0 0 14px;color:#203d2d;font-family:"Segoe UI",system-ui,sans-serif;letter-spacing:-.35px}
+h2{font-size:25px;font-weight:750}h3{font-size:19px;font-weight:720}
+.m{color:var(--mut)}
+label{display:block;margin-bottom:14px;color:#304b39;font-size:13px;font-weight:700}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid #d7e2d6;border-radius:10px;background:#fbfdf9;color:var(--ink);font:inherit;margin-top:6px;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+input::placeholder,textarea::placeholder{color:#91a196}
+input:hover,select:hover,textarea:hover{border-color:#a8c6a5}
+input:focus,select:focus,textarea:focus{border-color:#61a46c;background:#fff;box-shadow:0 0 0 4px #70b56d20;outline:0}
+input[aria-invalid="true"],select[aria-invalid="true"]{border-color:#ae493b;background:#fffafa}
+textarea{resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.row input,.row select{width:auto;flex:1;min-width:120px;margin:0}
+.btn{background:linear-gradient(135deg,var(--p),#318857);color:#fff;border:1px solid transparent;border-radius:10px;padding:10px 16px;font:700 14px/1.35 "Segoe UI",system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 10px #20734b25;transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 7px 15px #20734b35;filter:saturate(1.08)}
+.btn:active{transform:translateY(0)}
+.btn.ok{background:linear-gradient(135deg,#2c8053,#3a995f)}
+.btn.bad{background:linear-gradient(135deg,#a94438,#c95b45)}
+.btn.alt{background:#f4f8f1;color:var(--p-dark);border-color:#d5e5d2;box-shadow:none}
+.btn.alt:hover{background:#eaf3e6;box-shadow:0 5px 12px #244b3414}
+.icon-btn{background:transparent;border:0;color:#718577;padding:7px;line-height:0;cursor:pointer;vertical-align:middle;border-radius:8px;transition:color .16s ease,background .16s ease,transform .16s ease}
+.icon-btn:hover{color:var(--bad);background:#ae493b0d;transform:translateY(-1px)}
+.icon-btn:focus-visible{outline:3px solid #79b774;outline-offset:2px;border-radius:8px}
+.icon-btn svg{width:19px;height:19px;display:block}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #85bc70;outline-offset:2px}
+.it{padding:14px 15px;border:1px solid var(--line);border-radius:12px;margin-top:10px;background:#fcfefb;cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease}
+.it:hover{transform:translateY(-2px);border-color:#a9c99f;box-shadow:0 7px 16px #244b3410}
+.it.on{border-color:#70a967;background:linear-gradient(110deg,#f0f8ec,#f8fbf5);box-shadow:inset 3px 0 #4d9655,0 5px 14px #244b3410}
+.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;line-height:1.35;font-weight:750;letter-spacing:.15px;background:#edf1ec;color:#607165}
+.tag.g{background:#e5f3e4;color:#28734c}.tag.r{background:#f9e9e5;color:#a94438}.tag.a{background:#f8f0dc;color:#8b641c}
+.big{font:750 clamp(38px,6vw,54px)/1 "Segoe UI",system-ui,sans-serif;letter-spacing:-2px;color:#24734b;margin:13px 0}
+.big small{font-size:15px;font-weight:650;letter-spacing:0;color:var(--mut)}
+.bar{display:grid;grid-template-columns:minmax(110px,200px) minmax(60px,1fr) minmax(110px,max-content);gap:12px;align-items:center;margin:13px 0;font-size:13px;color:#49614f}
+.bar div{overflow:hidden;background:#eaf0e7;height:10px;border-radius:999px}
+.bar i{display:block;min-width:2px;height:10px;background:linear-gradient(90deg,#78b34d,#278253);border-radius:999px;animation:bar-in .65s ease both;transform-origin:left}
+.bar b{text-align:right;color:#345b3c;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+th,td{text-align:left;padding:12px 11px;border-bottom:1px solid #e8eee6;vertical-align:middle}
+th{position:sticky;top:0;background:#f4f8f1;color:#536957;font-size:11px;text-transform:uppercase;letter-spacing:.65px;font-weight:750;white-space:nowrap}
+th:first-child{border-radius:9px 0 0 0}th:last-child{border-radius:0 9px 0 0}
+tbody tr:last-child td,tr:last-child td{border-bottom:0}
+tr:hover td{background:#f9fcf7}
+td .btn{padding:7px 10px;font-size:12px}
+#msg{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);max-width:min(540px,calc(100% - 32px));background:#a94438;color:#fff;padding:12px 20px;border:1px solid #ffffff2b;border-radius:12px;z-index:9;box-shadow:0 12px 30px #40201835;font-weight:650;animation:rise-in .2s ease both}
+dialog{width:min(460px,calc(100% - 32px));border:1px solid rgba(220,232,220,.9);border-radius:20px;padding:28px;color:var(--ink);box-shadow:0 24px 80px rgba(19,45,30,.28);background:rgba(255,255,255,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+dialog::backdrop{background:rgba(23,59,43,.28);backdrop-filter:blur(4px)}
+dialog form{display:flex;justify-content:flex-end}
+#app:has(#f)>.card{position:relative;overflow:hidden;max-width:480px!important;margin:clamp(28px,7vh,72px) auto;padding:clamp(24px,5vw,38px);border-radius:22px;background:radial-gradient(ellipse at 100% 0%,#e9f3e65c,transparent 36%),radial-gradient(ellipse at 0% 100%,#f0f6ed80,transparent 32%),#fff;box-shadow:0 22px 60px #244b3416}
+#app:has(#f)>.card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,#70a843,#278253 58%,#214f37)}
+#app:has(#f)>.card h2{font-size:28px}
+#app:has(#f)>.card #sw{color:var(--p-dark);font-weight:700;text-decoration:none}
+#app:has(#f)>.card #sw:hover{text-decoration:underline}
+#app:has(#f)>.card form>.btn{width:100%;margin-top:3px;padding:12px}
+.password-rules{display:grid;gap:5px;margin:-5px 0 15px;padding:0;list-style:none;color:var(--mut);font-size:12px}
+.password-rules li{display:flex;align-items:center;gap:7px;transition:color .15s ease}
+.password-rules li::before{content:"○";width:15px;color:#89988c;font-weight:800}
+.password-rules li.met{color:#28734c}
+.password-rules li.met::before{content:"✓";color:#28734c}
+.form-error{display:block;margin:-8px 0 14px;color:#a94438;font-size:12px;font-weight:600}
+.form-error[hidden]{display:none}
+.form-hint{display:block;margin:-8px 0 14px;color:var(--mut);font-size:12px;font-weight:400}
+.password-field{position:relative;display:block}
+.password-field input{padding-right:48px}
+.password-toggle{position:absolute;top:calc(50% + 3px);right:6px;display:grid;place-items:center;width:36px;height:36px;padding:7px;border:0;border-radius:8px;background:transparent;color:#718577;cursor:pointer;transform:translateY(-50%);transition:background .16s ease,color .16s ease}
+.password-toggle:hover{background:#eaf3e6;color:var(--p-dark)}
+.password-toggle:focus-visible{outline:3px solid #85bc70;outline-offset:2px}
+.password-toggle svg{display:block;width:20px;height:20px}
+#f button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;filter:none}
+@keyframes rise-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bar-in{from{transform:scaleX(.12)}to{transform:scaleX(1)}}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px;margin:17px 0}
+.kpi{padding:17px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,#fff,#f6faf3)}
+.kpi span{display:block;color:var(--mut);font-size:12px;font-weight:650}.kpi b{display:block;margin-top:8px;color:#24734b;font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums}
+.exec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.exec-head p{max-width:680px;margin:6px 0 0}
+.period-filter{width:min(230px,100%);margin:0}
+.exec-hero{position:relative;overflow:hidden;padding:clamp(22px,3vw,34px);border:0;background:linear-gradient(125deg,#174b36,#27764c 68%,#5a9a58);color:white}
+.exec-hero h2,.exec-hero .m{color:#eef8ec}.exec-hero .m{opacity:.86}
+.exec-hero .dashboard-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin:22px 0 0}
+.exec-hero .kpi{border-color:#ffffff30;background:#ffffff14;box-shadow:none}
+.exec-hero .kpi span{color:#e4f2e3}.exec-hero .kpi b{color:#fff;font-size:clamp(20px,2.4vw,27px)}
+.exec-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.chart-card{min-height:280px}
+.chart-bars{display:flex;align-items:flex-end;gap:clamp(8px,2vw,20px);height:190px;padding:18px 4px 0;border-bottom:1px solid var(--line)}
+.chart-col{display:flex;flex:1;min-width:28px;height:100%;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;color:var(--mut);font-size:11px;text-align:center}
+.chart-col b{color:#345b3c;font-size:11px;font-weight:650;white-space:nowrap}
+.chart-col i{display:block;width:min(42px,72%);min-height:3px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#73b64c,#23764d);transform-origin:bottom;animation:bar-in .55s ease both}
+.rank-list{display:grid;gap:13px;margin-top:18px}
+.rank-row{display:grid;grid-template-columns:minmax(105px,1fr) minmax(70px,2fr) minmax(82px,max-content);gap:10px;align-items:center;color:#49614f;font-size:12px}
+.rank-row>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-track{height:10px;overflow:hidden;border-radius:999px;background:#eaf0e7}
+.rank-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#78b34d,#278253)}
+.rank-row b{text-align:right;color:#345b3c;font-variant-numeric:tabular-nums}
+.status-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
+.status-item{padding:13px;border:1px solid var(--line);border-radius:12px;background:#fbfdf9}
+.status-item b{display:block;margin-top:7px;color:#284a35;font-size:22px}
+.step-title{display:flex;align-items:center;gap:10px}
+.step-number{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:50%;background:#e8f3e5;color:var(--p-dark);font-size:14px;font-weight:800}
+.field-help{display:block;margin:5px 0 0;color:var(--mut);font-size:12px;line-height:1.45;font-weight:400}
+.simple-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;align-items:start}
+.simple-form label{min-width:0;margin:0}
+.simple-form select,.simple-form input{display:block;min-width:0}
+.simple-form .field-wide{grid-column:1/-1}
+.simple-form .btn{width:100%}
+.form-tip{padding:13px 15px;border-left:4px solid #78ad4e;border-radius:8px;background:#f2f8ee;color:#46634a;font-size:13px}
+.optional-details{margin-top:16px;border:1px solid var(--line);border-radius:13px;background:#fbfdf9}
+.optional-details summary{padding:14px 16px;color:#355641;font-weight:700;cursor:pointer}
+.optional-details[open] summary{border-bottom:1px solid var(--line)}
+.optional-content{padding:15px}
+.muted-label{color:var(--mut);font-weight:500}
+.transport-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:0 12px;align-items:end}
+.transport-form .row{grid-column:1/-1;margin:0 0 10px}
+.note{padding:12px 14px;border:1px solid #e8dfbe;border-radius:10px;background:#fff9e9;color:#725b27;font-size:13px}
+@media(max-width:760px){.exec-charts{grid-template-columns:1fr}}
+@media(max-width:650px){header{position:relative;padding:13px 16px;align-items:flex-start}header h1{font-size:20px}header h1::before{width:39px;height:39px;flex-basis:39px;background-size:auto 55px}header h1 small{font-size:11px;max-width:150px}#hdr{gap:3px}#hdr>span{width:100%;margin:0 0 2px;padding:0 7px}#hdr a{padding:7px 9px;font-size:12px}main{margin:21px auto;padding:0 13px}.card{border-radius:15px;padding:17px;margin-bottom:14px}.bar{grid-template-columns:minmax(82px,1fr) minmax(55px,1.5fr) 65px;gap:8px;font-size:12px}table{min-width:610px}#app:has(#f)>.card{margin:23px auto}.big{font-size:42px}.simple-form{grid-template-columns:1fr;gap:14px}.simple-form .field-wide{grid-column:auto}.chart-bars{gap:7px}.rank-row{grid-template-columns:minmax(82px,1fr) minmax(55px,1.2fr) minmax(68px,max-content);gap:7px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style></head><body>
+<header><h1>CarbonCheck<small>Carbono e eficiência para transportadoras</small></h1><div id="hdr"></div></header>
+<main id="app"></main><div id="msg" hidden role="alert"></div>
+<dialog id="notice" aria-labelledby="notice-title" aria-describedby="notice-text">
+ <h2 id="notice-title">Solicitação enviada</h2>
+ <p id="notice-text"></p>
+ <form method="dialog"><button class="btn">Entendi</button></form>
+</dialog>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STT={rascunho:'Rascunho',submetido:'Submetido',ajuste_solicitado:'Ajuste solicitado',aprovado:'Aprovado',reprovado:'Reprovado'},PERF={organizacao:'Organização emissora',verificador:'Verificador',regulador:'Órgão regulador',administrador:'Administrador'};
+const badge=s=>`<span class="tag ${['aprovado','Conforme'].includes(s)?'g':['reprovado','Não conforme'].includes(s)?'r':['submetido','ajuste_solicitado','Em análise'].includes(s)?'a':''}">${STT[s]||s}</span>`;
+const formatEmission=value=>{const amount=Number(value),inKg=Math.abs(amount)<1;return `${new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(inKg?amount*1000:amount)} ${inKg?'kgCO₂e':'tCO₂e'}`};
+let tok=sessionStorage.tok,user=JSON.parse(sessionStorage.user||'null'),F={},cur=null;
+const say=m=>{const b=$('#msg');b.textContent=m;b.hidden=false;setTimeout(()=>b.hidden=true,4500)};
+function confirmarSolicitacao(m){authView(false);$('#notice-text').textContent=m;$('#notice').showModal()}
+async function api(p,o={}){const r=await fetch('/api'+p,{method:o.m||'GET',headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})},body:o.b?JSON.stringify(o.b):undefined});const j=await r.json().catch(()=>({}));if(r.status==401&&tok&&!p.startsWith('/auth'))sair();if(!r.ok)throw new Error(j.erro||'Erro '+r.status);return j}
+function sair(){tok=user=null;sessionStorage.clear();$('#hdr').innerHTML='';authView()}
+function authView(reg=false){
+ $('#app').innerHTML=`<div class="card" style="max-width:430px;margin:28px auto"><h2>${reg?'Criar conta':'Entrar'}</h2><form id="f"${reg?' novalidate':''}>
+ ${reg?`<label>Nome ou organização<input name="nome" required></label><label>Tipo de conta<select name="perfil" required><option value="organizacao">Organização</option><option value="verificador">Verificador (sujeito à aprovação)</option><option value="regulador">Regulador (sujeito à aprovação)</option></select></label><p class="m">Solicitações de verificador e regulador precisam ser aprovadas por um administrador antes do primeiro acesso.</p>`:''}
+ <label>E-mail<input name="email" type="email" placeholder="nome@carboncheck.com.br" aria-describedby="${reg?'email-feedback':''}" required></label>${reg?'<small id="email-feedback" class="form-hint" aria-live="polite">Use um e-mail @carboncheck.com.br.</small>':''}<label>Senha<span class="password-field"><input name="senha" type="password" minlength="8" autocomplete="${reg?'new-password':'current-password'}" required><button class="password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false" title="Mostrar senha"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+ ${reg?`<ul class="password-rules" id="password-rules" aria-live="polite"><li data-rule="length">Pelo menos 8 caracteres</li><li data-rule="upper">Uma letra maiúscula (A-Z)</li><li data-rule="lower">Uma letra minúscula (a-z)</li><li data-rule="special">Um caractere especial (ex.: !@#$%)</li></ul>`:''}
+ <button class="btn" type="submit"${reg?' disabled':''}>${reg?'Criar conta':'Entrar'}</button></form><p><a href="#" id="sw">${reg?'Já tenho conta':'Criar uma conta'}</a></p>
+ ${reg?'':'<p class="m">Use um e-mail @carboncheck.com.br. Contas de demonstração (senha <b>demo1234</b>): org@carboncheck.com.br, verificador@carboncheck.com.br, regulador@carboncheck.com.br, admin@carboncheck.com.br.</p>'}</div>`;
+ $('#sw').onclick=e=>{e.preventDefault();authView(!reg)};
+ const password=$('#f [name="senha"]'),passwordToggle=$('.password-toggle');
+ passwordToggle.onclick=()=>{const visible=password.type==='password';password.type=visible?'text':'password';passwordToggle.setAttribute('aria-label',visible?'Ocultar senha':'Mostrar senha');passwordToggle.setAttribute('title',visible?'Ocultar senha':'Mostrar senha');passwordToggle.setAttribute('aria-pressed',String(visible));passwordToggle.querySelector('svg').innerHTML=`<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>${visible?'<path d="m3 3 18 18"/>':''}`};
+ if(reg){const password=$('#f [name="senha"]'),submit=$('#f button[type="submit"]');const updateRequirements=()=>{const value=password.value,rules={length:value.length>=8,upper:/[A-Z]/.test(value),lower:/[a-z]/.test(value),special:/[^\p{L}\p{N}]/u.test(value)};for(const [rule,met] of Object.entries(rules))$('#password-rules [data-rule="'+rule+'"]').classList.toggle('met',met);submit.disabled=!Object.values(rules).every(Boolean)};password.addEventListener('input',updateRequirements);updateRequirements()}
+ $('#f').onsubmit=async e=>{e.preventDefault();try{const r=await api(reg?'/auth/cadastro':'/auth/login',{m:'POST',b:Object.fromEntries(new FormData(e.target))});if(r.pendente){confirmarSolicitacao(r.mensagem);return}tok=r.token;user=r.usuario;sessionStorage.tok=tok;sessionStorage.user=JSON.stringify(user);start()}catch(x){say(x.message)}}}
+function atualizarFeedbackEmail(email,feedback){
+ const value=email.value.trim(),emailValid=email.checkValidity()&&/^[^@\s]+@carboncheck\.com\.br$/i.test(value);
+ email.setAttribute('aria-invalid',String(value.length>0&&!emailValid));
+ feedback.textContent=!value?'Use um e-mail @carboncheck.com.br.':emailValid?'Formato de e-mail válido.':email.validity.typeMismatch?'Digite um endereço de e-mail válido.':'O e-mail deve terminar com @carboncheck.com.br.';
+ feedback.className=value.length>0&&!emailValid?'form-error':'form-hint';
+ return emailValid;
+}
+document.addEventListener('input',e=>{
+ const email=e.target;
+ if(email.name!=='email'||!email.form?.hasAttribute('novalidate'))return;
+ atualizarFeedbackEmail(email,$('#email-feedback'));
+});
+document.addEventListener('submit',e=>{
+ const form=e.target;
+ if(form.id!=='f'||!form.hasAttribute('novalidate'))return;
+ const email=form.elements.email,feedback=$('#email-feedback');
+ const emailValid=atualizarFeedbackEmail(email,feedback);
+ const invalid=[...form.querySelectorAll('[required]')].find(field=>field===email?!emailValid:!field.checkValidity());
+ if(invalid){e.preventDefault();e.stopImmediatePropagation();if(invalid!==email)say('Preencha corretamente os campos obrigatórios.');invalid.focus()}
+},true);
+async function start(){if(!tok)return authView();try{F=await api('/fatores');
+ const privileged=['verificador','regulador','administrador'].includes(user.perfil);
+ $('#hdr').innerHTML=`<span>${esc(user.nome)} (${PERF[user.perfil]||esc(user.perfil)})</span>${privileged?'<a href="#" data-t="painel">Painel</a>':''}<a href="#" data-t="inv">Inventários</a><a href="#" data-t="hist">Histórico</a>${user.perfil=='administrador'?'<a href="#" data-t="admin">Administração</a>':''}<a href="#" data-t="out">Sair</a>`;
+ $('#hdr').onclick=e=>{const t=e.target.dataset.t;if(!t)return;e.preventDefault();t=='out'?sair():nav(t)};nav(privileged?'painel':'inv')}catch(x){say(x.message)}}
+function nav(t){$('#app').innerHTML='<div id="main"></div>';if(t=='painel')dashboardView();else if(t=='hist')histView();else if(t=='admin')adminView();else invView()}
+async function dashboardView(ano=''){try{
+ const url=ano?`/painel/transporte?ano=${encodeURIComponent(ano)}`:'/painel/transporte',d=await api(url);
+ if(!d||!d.totais)throw new Error('A resposta do painel está incompleta. Atualize a página ou tente novamente.');
+ const v=d.totais,porAno=Array.isArray(d.por_ano)?d.por_ano:[],porCategoria=Array.isArray(d.por_categoria)?d.por_categoria:[],porTransportadora=Array.isArray(d.por_transportadora)?d.por_transportadora:[],porStatus=d.por_status&&typeof d.por_status==='object'?d.por_status:{};
+ const maxAno=Math.max(0,...porAno.map(item=>item.emissoes_tco2e));
+ const maxCategoria=Math.max(0,...porCategoria.map(item=>item.emissoes_tco2e));
+ const maxTransportadora=Math.max(0,...porTransportadora.map(item=>item.emissoes_tco2e));
+ const media=v.inventarios?v.emissoes_tco2e/v.inventarios:0;
+ const anos=Array.isArray(d.anos_disponiveis)?d.anos_disponiveis:[];
+ const periodo=ano?`no ano de ${esc(ano)}`:'em todos os anos';
+ const anosGrafico=porAno.map(item=>`<div class="chart-col" title="${item.periodo}: ${formatEmission(item.emissoes_tco2e)}"><b>${formatEmission(item.emissoes_tco2e)}</b><i style="height:${maxAno?Math.max(3,item.emissoes_tco2e/maxAno*100):3}%"></i><span>${item.periodo}</span></div>`).join('');
+ const categorias=porCategoria.map(item=>`<div class="rank-row"><span>${esc(item.categoria)}</span><div class="rank-track"><i style="width:${maxCategoria?item.emissoes_tco2e/maxCategoria*100:0}%"></i></div><b>${formatEmission(item.emissoes_tco2e)}</b></div>`).join('');
+ const transportadoras=porTransportadora.slice(0,8).map((item,index)=>`<div class="rank-row"><span title="${esc(item.organizacao)}">${index+1}. ${esc(item.organizacao)}</span><div class="rank-track"><i style="width:${maxTransportadora?item.emissoes_tco2e/maxTransportadora*100:0}%"></i></div><b>${formatEmission(item.emissoes_tco2e)}</b></div>`).join('');
+ const statuses=Object.entries(porStatus).filter(([,count])=>count).map(([status,count])=>`<div class="status-item">${badge(status)}<b>${count}</b><span class="m">${count==1?'inventário':'inventários'}</span></div>`).join('');
+ $('#main').innerHTML=`<div class="card exec-hero">
+ <div class="exec-head"><div><h2>Visão executiva de emissões</h2><p class="m">Os indicadores de emissões consideram somente inventários aprovados. O quadro de andamento mantém os demais status para acompanhamento.</p></div>
+ <label class="period-filter">Período de apuração<select id="dashboard-year"><option value="">Todos os anos</option>${anos.map(y=>`<option value="${y}" ${String(y)==String(ano)?'selected':''}>${y}</option>`).join('')}</select></label></div>
+ <div class="dashboard-grid"><div class="kpi"><span>Emissões aprovadas ${periodo}</span><b>${formatEmission(v.emissoes_tco2e)}</b></div><div class="kpi"><span>Transportadoras com inventário aprovado</span><b>${v.transportadoras}</b></div><div class="kpi"><span>Inventários aprovados</span><b>${v.inventarios}</b></div><div class="kpi"><span>Média por inventário aprovado</span><b>${formatEmission(media)}</b></div></div>
+ <p class="m">As emissões são expressas em CO₂ equivalente. Os fatores atuais são ilustrativos; os resultados precisam de validação antes de uso regulatório.</p></div>
+ <div class="exec-charts"><section class="card chart-card"><h3>Evolução anual das emissões aprovadas</h3><p class="m">Soma das emissões de inventários aprovados em cada ano.</p>${anosGrafico?`<div class="chart-bars">${anosGrafico}</div>`:'<p class="m">Os dados aparecerão quando houver inventários aprovados.</p>'}</section>
+ <section class="card chart-card"><h3>De onde vêm as emissões aprovadas?</h3><p class="m">Distribuição por categoria ${ano?'no período selecionado':'consolidada'}.</p>${categorias?`<div class="rank-list">${categorias}</div>`:'<p class="m">Nenhuma emissão aprovada neste período.</p>'}</section>
+ <section class="card chart-card"><h3>Transportadoras com maiores emissões aprovadas</h3><p class="m">Ranking de emissões aprovadas ${periodo}.</p>${transportadoras?`<div class="rank-list">${transportadoras}</div>`:'<p class="m">Nenhuma transportadora com inventário aprovado neste período.</p>'}</section>
+ <section class="card chart-card"><h3>Andamento da verificação</h3><p class="m">Status dos inventários enviados ou analisados ${periodo}. Este quadro inclui inventários ainda não aprovados.</p>${statuses?`<div class="status-list">${statuses}</div>`:'<p class="m">Nenhum inventário enviado neste período.</p>'}</section></div>`;
+ $('#dashboard-year').onchange=e=>dashboardView(e.target.value);
+ }catch(x){say(x.message)}}
+async function adminView(){try{const L=await api('/admin/usuarios'),statusLabel={ativo:'Ativo',desativado:'Desativado',pendente_aprovacao:'Pendente aprovação'};
+ $('#main').innerHTML=`<div class="card"><h3>Contas cadastradas</h3><p class="m">Gerencie o perfil, a aprovação e o acesso de cada conta.</p>${L.length?`<table><tr><th>Nome</th><th>E-mail</th><th>Nível de perfil</th><th>Status</th><th>Ações</th></tr>${L.map(u=>`<tr><td>${esc(u.nome)}</td><td>${esc(u.email)}</td><td>${PERF[u.perfil]||esc(u.perfil)}</td><td><span class="tag ${u.status=='ativo'?'g':u.status=='desativado'?'r':'a'}">${statusLabel[u.status]}</span></td><td>${u.id==user.id?'<span class="m">Conta atual</span>':`${u.status=='pendente_aprovacao'?`<button class="btn ok" data-admin="approve" data-id="${u.id}">Aprovar</button> <button class="btn bad" data-admin="reject" data-id="${u.id}">Recusar</button>`:u.status=='ativo'?`<button class="btn bad" data-admin="deactivate" data-id="${u.id}">Desativar</button>`:`<button class="btn ok" data-admin="activate" data-id="${u.id}">Ativar</button>`} <button class="icon-btn" data-admin="delete" data-id="${u.id}" aria-label="Excluir permanentemente a conta de ${esc(u.nome)}" title="Excluir permanentemente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button>`}</td></tr>`).join('')}</table>`:'<p class="m">Não há contas cadastradas.</p>'}</div>`;
+ $('#main').onclick=async e=>{const action=e.target.closest('[data-admin]');if(!action)return;const a=action.dataset.admin,id=action.dataset.id;
+ if(a=='reject'&&!confirm('Recusar e remover esta solicitação?'))return;
+ if(a=='deactivate'&&!confirm('Desativar esta conta? A pessoa não poderá entrar nem usar o sistema.'))return;
+ if(a=='delete'){const account=L.find(account=>account.id==id);const warning=account.perfil=='organizacao'?' A exclusão também apagará todos os inventários desta organização.':account.perfil=='verificador'?' A identificação será removida dos pareceres de verificação preservados.':'';if(!confirm(`Excluir permanentemente a conta de ${account.nome} (${account.email})? Essa ação não pode ser desfeita.${warning}`))return}
+ try{if(a=='approve')await api(`/admin/solicitacoes/${id}/aprovar`,{m:'POST'});
+ else if(a=='reject')await api(`/admin/solicitacoes/${id}`,{m:'DELETE'});
+ else if(a=='delete')await api(`/admin/usuarios/${id}`,{m:'DELETE'});
+ else await api(`/admin/usuarios/${id}/status`,{m:'POST',b:{ativo:a=='activate'}});
+ adminView()}catch(x){say(x.message)}}
+ }catch(x){say(x.message)}}
+async function invView(sel){const L=await api('/inventarios'),p=user.perfil;
+ $('#main').innerHTML=`<div class="grid"><div><div class="card"><h3>${p=='verificador'?'Fila de verificação':'Inventários'}</h3>
+ ${p=='organizacao'?`<form id="nv" class="row"><input name="periodo" type="number" min="2000" max="2100" placeholder="Ano de apuração" required><button class="btn">Criar</button></form>`:''}
+ <div id="lst">${L.map(i=>`<div class="it ${sel==i.id?'on':''}" data-id="${i.id}"><b>${esc(i.organizacao)} · ${i.periodo}</b><br>${badge(i.status)} ${formatEmission(i.resumo.total_tco2e)}</div>`).join('')||'<p class="m">Nenhum inventário disponível.</p>'}</div></div></div><div id="det"><p class="m">Selecione um inventário.</p></div></div>`;
+ $('#lst').onclick=e=>{const el=e.target.closest('.it');if(el)invView(el.dataset.id)};
+ if($('#nv'))$('#nv').onsubmit=async e=>{e.preventDefault();try{invView((await api('/inventarios',{m:'POST',b:{periodo:e.target.periodo.value}})).id)}catch(x){say(x.message)}};
+ if(sel)abrir(sel)}
+async function abrir(id){const i=await api('/inventarios/'+id),p=user.perfil,t=i.resumo.total_tco2e||1;
+ const ed=p=='organizacao'&&['rascunho','ajuste_solicitado'].includes(i.status),vf=p=='verificador'&&i.status=='submetido';
+ $('#det').innerHTML=`<div class="card"><h3>${esc(i.organizacao)} · ${i.periodo} ${badge(i.status)}</h3><div class="big">${formatEmission(i.resumo.total_tco2e)}</div><p class="m">Valores abaixo de 1 tonelada são exibidos em kgCO₂e.</p><p class="m">${i.enquadramento}</p>
+ ${Object.entries(i.resumo.por_categoria).map(([k,v])=>`<div class="bar"><span>${k}</span><div><i style="width:${v/t*100}%"></i></div><b>${formatEmission(v)}</b></div>`).join('')}
+ <div class="row"><button class="btn alt" data-a="pdf">Baixar PDF</button><button class="btn alt" data-a="json">Baixar JSON</button>${ed&&i.lancamentos.length?'<button class="btn ok" data-a="sub">Enviar para verificação</button>':ed?'<span class="m">Adicione ao menos uma emissão antes de enviar.</span>':''}</div></div>
+ ${ed?`<div class="card"><h3 class="step-title"><span class="step-number">1</span>Registrar as emissões</h3><p class="m">Informe o que a transportadora consumiu ou utilizou. O sistema estima o CO₂ equivalente usando um fator de emissão.</p><div class="form-tip"><b>Para começar:</b> escolha uma fonte (por exemplo, diesel), informe o mês e a quantidade da conta, nota ou controle de abastecimento. Repita para outras fontes e meses com dados.</div>
+ <form id="lf" class="simple-form"><label>O que foi consumido ou utilizado<select name="fonte" id="lf-source">${Object.entries(F).map(([k,f])=>`<option value="${k}" ${k=='diesel'?'selected':''}>${f.nome} (${f.unidade})</option>`).join('')}</select><small class="field-help">Escolha a opção que mais se aproxima do seu comprovante ou controle.</small></label>
+ <label>Mês do consumo<select name="mes">${[...Array(12)].map((_,n)=>`<option value="${n+1}">${new Intl.DateTimeFormat('pt-BR',{month:'long'}).format(new Date(2025,n,1))}</option>`).join('')}</select><small class="field-help">Lance os meses em que houve consumo. Não precisa cadastrar mês sem atividade.</small></label>
+ <label>Quantidade e unidade<input name="quantidade" id="lf-quantity" type="number" step="any" min="0.000001" placeholder="Ex.: 350" required><small class="field-help" id="source-help"></small></label>
+ <label class="muted-label">Esse consumo foi usado no transporte da carga?<span style="display:flex;align-items:flex-start;gap:9px;margin-top:8px"><input type="checkbox" name="transporte" style="width:auto;margin:3px 0 0"><span>Marque para combustível/energia de veículos e atividades de transporte. Ex.: diesel dos caminhões.</span></span></label>
+ <div class="field-wide"><p class="note">Evite contar a mesma atividade duas vezes: se calcular o caminhão pelo combustível, não lance também a distância do mesmo caminhão como outra fonte de emissão.</p><button class="btn">Adicionar este consumo</button></div></form></div>
+ <details class="optional-details"><summary>Dados operacionais da frota (opcional; não precisa preencher para calcular emissões)</summary><div class="optional-content"><p class="m">Esses dados descrevem a operação (km, viagens e carga), mas não são necessários para registrar as emissões. Eles não entram nos indicadores principais de carbono do painel. Use somente se tiver esses controles disponíveis.</p>
+ <form id="of"><div class="transport-form"><label>Mês<select name="mes">${[...Array(12)].map((_,n)=>`<option value="${n+1}">Mês ${n+1}</option>`).join('')}</select></label><label>Modal<select name="modal"><option value="rodoviario">Rodoviário</option><option value="ferroviario">Ferroviário</option><option value="aquaviario">Aquaviário</option><option value="aereo">Aéreo</option></select></label><label>Veículo/equipamento<input name="tipo_veiculo" maxlength="80" placeholder="Ex.: cavalo mecânico + carreta" required></label>
+ <label>Distância total (km)<input name="km_total" type="number" step="any" min="0" value="0"></label><label>Distância vazia (km)<input name="km_vazio" type="number" step="any" min="0" value="0"></label><label>Carga transportada (t)<input name="carga_t" type="number" step="any" min="0" value="0"></label><label>Produtividade (t.km)<input name="tonelada_km" type="number" step="any" min="0" placeholder="Calculada se vazio"></label>
+ <label>Viagens<input name="viagens" type="number" min="0" step="1" value="0"></label><label>Veículos ativos no modal<input name="veiculos" type="number" min="0" step="1" value="0"></label><label>Combustível consumido (L)<input name="combustivel_l" type="number" step="any" min="0" value="0"></label><label>Energia de tração (kWh)<input name="energia_kwh" type="number" step="any" min="0" value="0"></label>
+ <label>Vazamento de refrigerante (kg)<input name="refrigerante_kg" type="number" step="any" min="0" value="0"></label><label>Refrigeração de carga (h)<input name="refrigeracao_h" type="number" step="any" min="0" value="0"></label><label>Frete terceirizado (t.km)<input name="frete_terceirizado_tkm" type="number" step="any" min="0" value="0"></label><div class="row"><button class="btn">Registrar indicadores do mês</button></div></div></form>
+ ${(i.operacoes||[]).length?`<h3>Dados operacionais já registrados</h3><table><tr><th>Mês</th><th>Modal / veículo</th><th>Distância</th><th>Vazia</th><th>Carga</th><th>t.km</th><th>Viagens</th><th>Consumo</th><th>Refrigeração</th><th></th></tr>${i.operacoes.map(op=>`<tr><td>${op.mes}</td><td>${{rodoviario:'Rodoviário',ferroviario:'Ferroviário',aquaviario:'Aquaviário',aereo:'Aéreo'}[op.modal]||esc(op.modal)}<br>${esc(op.tipo_veiculo)}</td><td>${op.km_total} km</td><td>${op.km_vazio} km</td><td>${op.carga_t} t</td><td>${op.tonelada_km}</td><td>${op.viagens}</td><td>${op.combustivel_l} L / ${op.energia_kwh} kWh</td><td>${op.refrigerante_kg} kg / ${op.refrigeracao_h} h</td><td>${ed?`<a href="#" data-a="delop" data-o="${op.id}">remover</a>`:''}</td></tr>`).join('')}</table>`:''}</div></details>`:''}
+ <div class="card"><h3>Lançamentos</h3>${i.lancamentos.length?`<table><tr><th>Mês</th><th>Fonte</th><th>Quantidade</th><th>Emissões</th><th></th></tr>${i.lancamentos.map(l=>`<tr><td>${l.mes}</td><td>${esc(l.nome)}</td><td>${l.quantidade} ${l.unidade}</td><td>${formatEmission(l.tco2e)}</td><td>${ed?`<a href="#" data-a="del" data-l="${l.id}">remover</a>`:''}</td></tr>`).join('')}</table>`:'<p class="m">Nenhum lançamento. Use o formulário acima para adicionar consumo.</p>'}</div>
+ ${i.verificacoes.length?`<div class="card"><h3>Pareceres do verificador</h3>${i.verificacoes.map(v=>`<p>${badge(v.decisao)} <b>${esc(v.verificador||'Identidade removida')}</b> <span class="m">${v.data}</span><br>${esc(v.parecer)}</p>`).join('')}</div>`:''}
+ ${vf?`<div class="card"><h3>Parecer de verificação</h3><textarea id="par" rows="3" placeholder="Parecer técnico (obrigatório)"></textarea><div class="row"><button class="btn ok" data-a="v" data-d="aprovar">Aprovar</button><button class="btn alt" data-a="v" data-d="ajustar">Solicitar ajuste</button><button class="btn bad" data-a="v" data-d="reprovar">Reprovar</button></div></div>`:''}`;
+ $('#det').onclick=async e=>{const a=e.target.dataset.a;if(!a)return;e.preventDefault();try{
+  if(a=='pdf'||a=='json')return dl(id,a);
+  if(a=='sub')await api(`/inventarios/${id}/submeter`,{m:'POST'});
+  if(a=='del')await api(`/inventarios/${id}/lancamentos/${e.target.dataset.l}`,{m:'DELETE'});
+  if(a=='delop')await api(`/inventarios/${id}/operacoes/${e.target.dataset.o}`,{m:'DELETE'});
+  if(a=='v')await api(`/inventarios/${id}/verificacao`,{m:'POST',b:{decisao:e.target.dataset.d,parecer:$('#par').value}});
+  invView(id)}catch(x){say(x.message)}};
+ if($('#lf')){
+  const updateSourceHelp=()=>{const factor=F[$('#lf-source').value],quantity=Number($('#lf-quantity').value)||0,estimate=quantity*factor.fator/1000,fatorFormatado=new Intl.NumberFormat('pt-BR',{maximumFractionDigits:4}).format(factor.fator);$('#source-help').textContent=`Informe em ${factor.unidade}. Exemplo: ${factor.nome} usa fator ilustrativo de ${fatorFormatado} kgCO₂e por ${factor.unidade}${quantity>0?`; estimativa deste lançamento: ${formatEmission(estimate)}.`:'.'}`};
+  $('#lf-source').onchange=updateSourceHelp;$('#lf-quantity').oninput=updateSourceHelp;updateSourceHelp();
+  $('#lf').onsubmit=async e=>{e.preventDefault();try{await api(`/inventarios/${id}/lancamentos`,{m:'POST',b:Object.fromEntries(new FormData(e.target))});invView(id)}catch(x){say(x.message)}}
+ }
+ if($('#of'))$('#of').onsubmit=async e=>{e.preventDefault();try{await api(`/inventarios/${id}/operacoes`,{m:'POST',b:Object.fromEntries(new FormData(e.target))});invView(id)}catch(x){say(x.message)}}}
+async function dl(id,f){const r=await fetch(`/api/inventarios/${id}/relatorio?formato=${f}`,{headers:{Authorization:'Bearer '+tok}});if(!r.ok)return say('Não foi possível gerar o relatório.');
+ const a=document.createElement('a');a.href=URL.createObjectURL(await r.blob());a.download=`inventario-${id}.${f}`;a.click()}
+async function histView(){const H=await api('/historico');
+ $('#main').innerHTML=`<div class="card"><h3>Histórico e status de conformidade</h3>${H.length?`<table><tr><th>Organização</th><th>Conformidade</th><th>Inventários por período</th></tr>${H.map(o=>`<tr><td>${esc(o.organizacao)}</td><td>${badge(o.conformidade)}</td><td>${o.inventarios.map(i=>`${i.periodo}: ${STT[i.status]} (${formatEmission(i.total_tco2e)})`).join('<br>')}</td></tr>`).join('')}</table>`:'<p class="m">Ainda não há inventários registrados.</p>'}</div>`}
+start();
+</script></body></html>
